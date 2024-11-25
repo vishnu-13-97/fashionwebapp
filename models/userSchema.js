@@ -9,13 +9,13 @@ const userSchema = new Schema({
     email:{
         type:String,
         required:true,
-        unique:true
+        // unique:true
     },
     phone:{
         type:String,
-        required:false,
+        required:true,
         unique:false,
-        sparse:true,
+        // sparse:true,
         default:null
     },
     googleId:{
@@ -24,7 +24,7 @@ const userSchema = new Schema({
     },
     password:{
         type:String,
-        required:false
+        required:true
     },
     isBlocked:{
         type:Boolean,

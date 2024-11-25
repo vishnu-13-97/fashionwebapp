@@ -506,11 +506,17 @@ ol {
 .header__nav__option {
 	text-align: right;
 	padding: 30px 0;
+	
 }
 
 .header__nav__option a {
 	display: inline-block;
-	margin-right: 26px;
+	margin-right: 20px;
+	position: relative;
+	color: #0d0d0d;
+	text-decoration: none;
+	font-size: 18px;
+	font-weight: 600;
 	position: relative;
 }
 
@@ -521,6 +527,9 @@ ol {
 	left: 5px;
 	top: 8px;
 }
+
+
+
 
 .header__nav__option a:last-child {
 	margin-right: 0;
