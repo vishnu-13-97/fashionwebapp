@@ -118,6 +118,47 @@ const resendOtp = async (req, res) => {
   }
 }
 
+
+const loadLogin = async (req,res)=>{
+  try {
+    if(!req.session.user){
+      return res.render('login');
+    }else{
+      return res.redirect('/')
+    }
+  } catch (error) {
+    res.redirect('/pageNotFound')
+    
+  }
+}
+
+const login = async (req,res)=>{
+  try {
+    const {email,password}=req.body;
+    const findUser = await User.findOne({isAdmin:0,email:email});
+
+    if(!findUser){
+      return res.render('login',{message:"User not found"})
+    }
+    if(findUser.isBlocked){
+      return res.render('login',{message:"User is Blocked"})
+    }
+    const passwordMatch = await bcrypt.compare(password,findUser.password);
+
+    if(!passwordMatch){
+      return res.render('login',{message:"Incorrect Password"})
+    }
+
+    req.session.user = findUser._id;
+    res.redirect('/');
+
+  } catch (error) {
+    console.error("Login Error",error);
+    res.render('login',{message:"Login failed try again later"})
+  }
+
+}
+
 const pageNotFound = async (req, res) => {
   try {
     return res.render("page-404");
@@ -134,4 +175,6 @@ module.exports = {
   generateOtp,
   verifyOtp,
   resendOtp,
+  loadLogin,
+  login
 };

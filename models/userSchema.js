@@ -22,7 +22,7 @@ const userSchema = new Schema({
         type:String,
         unique:true,
         sparse:true,
-        required:true,
+        required:false,
      
         
     },

@@ -9,7 +9,7 @@ passport.use(new GoogleStrategy({
     callbackURL: '/auth/google/callback'
 },
 async (accessToken, refreshToken, profile, done )=>{
-    console.log("Profile:", JSON.stringify(profile, null, 2));
+    // console.log("Profile:", JSON.stringify(profile, null, 2));
 
     
     try {
