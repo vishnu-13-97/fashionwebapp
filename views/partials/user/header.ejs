@@ -23,6 +23,47 @@
     <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="css/style.css" type="text/css">
 
+    <style>
+
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.profile-dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+
+.dropdown-item {
+  display: block;
+  padding: 0.5rem;
+  color: black;
+  text-decoration: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+    </style>
+
    
 </head>
 
@@ -52,8 +93,20 @@
                 </div>
                 <div class="col-lg-3 col-md-3">
                     <div class="header__nav__option">
+                        <% if(locals.user){ %>
+                            <div class="profile-dropdown">
+                                <button class="dropdown-toggle">
+                                  <%= locals.user.name %> <!-- Display user's name -->
+                                </button>
+                                <div class="dropdown-menu">
+                                  <a href="/profile" class="dropdown-item">Profile</a>
+                                  <a href="/logout" class="dropdown-item">Logout</a>
+                                </div>
+                              </div>
+                           <% } else {%>
                         <a href="/signUp" class="sign-up">Sign Up </a>
                         <a href="/login" class="sign-up">Login</a>
+                        <% } %>
                         <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
                         <a href="#"><img src="img/icon/heart.png" alt=""></a>
                         <a href="#"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
