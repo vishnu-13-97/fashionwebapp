@@ -8,6 +8,7 @@ const db = require('./config/db');
 const PORT = process.env.PORT;
 db();
 const userRouter = require('./routes/userRouter')
+const adminRouter = require('./routes/adminRouter')
 
 
 app.use(express.json());
@@ -39,7 +40,8 @@ app.set('views',[
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use('/',userRouter)
+app.use('/',userRouter);
+app.use('/admin',adminRouter);
 
 app.listen(PORT,(req,res)=>{
     console.log(`server Running on PORT ${PORT}`);

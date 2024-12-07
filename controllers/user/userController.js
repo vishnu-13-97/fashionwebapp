@@ -165,7 +165,7 @@ const logOut = async (req, res) => {
         console.error("Session destruction error:", err);
         return res.redirect('/pageNotFound');
       }
-      return res.redirect('/login');
+      return res.redirect('/');
     });
   } catch (error) {
     console.error("Unexpected log out error:", error);
