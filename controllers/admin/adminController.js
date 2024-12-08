@@ -17,19 +17,19 @@ const login = async (req, res) => {
 
 
       if (!email || !password) {
-          return res.render("login", { message: "Email and password are required" });
+          return res.render("admin-login", { message: "Email and password are required" });
       }
 
    
       const admin = await User.findOne({ isAdmin: true, email });
       if (!admin) {
-          return res.render("login", { message: "Invalid credentials" });
+          return res.render("admin-login", { message: "Invalid credentials" });
       }
 
-    
+ 
       const passwordMatch = await bcrypt.compare(password, admin.password);
       if (!passwordMatch) {
-          return res.render("login", { message: "Invalid credentials" });
+          return res.render("admin-login", { message: "Invalid credentials" });
       }
 
        req.session.admin =admin._id;
@@ -64,8 +64,20 @@ const dashboard = async (req, res) => {
 
 
 
+
+const logOut = (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("Failed to destroy session:", err);
+            return res.status(500).send("Failed to log out");
+        }
+        
+        res.redirect('/admin/login')
+    });
+};
+
 const pageError = (req,res)=>{
-    res.render('pageError')
+    res.render('pageError');
 }
 
 
@@ -75,5 +87,6 @@ module.exports=({
     loadLogin,
     login,
     dashboard,
-    pageError
+    pageError,
+    logOut
 })
