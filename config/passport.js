@@ -9,10 +9,7 @@ passport.use(new GoogleStrategy({
     callbackURL: '/auth/google/callback'
 },
 async (accessToken, refreshToken, profile, done )=>{
-    // console.log("Profile:", JSON.stringify(profile, null, 2));
-
-    
-    try {
+         try {
         let user = await User.findOne({googleId:profile.id});
         if(user){
           if (user.isBlocked) {

@@ -1,71 +1,7 @@
 <%- include("../partials/admin/header.ejs") %>
 <head>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
-  <style>
-    .col-md-3 {
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      margin: 10px;
-    }
-
-    .form-label {
-      margin-bottom: 8px;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-
-    .d-grid {
-      margin-top: 20px;
-    }
-
-    .btn-primary {
-      background-color: #007bff;
-      color: #fff;
-      border: 1px solid #007bff;
-      border-radius: 5px;
-      padding: 10px 20px;
-      cursor: pointer;
-    }
-
-    .btn-primary:hover {
-      background-color: #0056b3;
-      border-color: #0056b3;
-    }
-
-    .pagination-container {
-      text-align: center;
-    }
-
-    .pagination {
-      display: inline-block;
-    }
-
-    .pagination a,
-    .pagination .current-page {
-      display: inline-block;
-      padding: 5px 10px;
-      margin: 0 2px;
-      border: 1px solid #ddd;
-      text-decoration: none;
-      color: #333;
-    }
-
-    .pagination a:hover {
-      background-color: #f5f5f5;
-    }
-
-    .error-message {
-      color: red;
-    }
-  </style>
+  <link rel="stylesheet" href="../../public/css/category.css">
 </head>
 <body>
   <section class="content-main">
@@ -86,7 +22,7 @@
       <div class="card-body">
         <div class="row">
           <div class="col-md-3">
-            <form method="post" action="/admin/addCategory" onsubmit="">
+            <form id="category-form">
               <div class="mb-4">
                 <label for="product_name" class="form-label">Name</label>
                 <input type="text" name="name" placeholder="Type here" class="form-control" id="product_name" required/>
@@ -98,9 +34,7 @@
                 <div id="description-error" class="error-message"></div>
               </div>
               <div class="d-grid">
-                <button class="btn btn-primary" type="submit">
-                  Create category
-                </button>
+                <button class="btn btn-primary" type="submit">Create category</button>
               </div>
             </form>
           </div>
@@ -120,10 +54,11 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <% cat.reverse().forEach((category,index)=>{ %>
                   <tr>
                     <td></td>
-                    <td class="text-start"></td>
-                    <td class="text-start"></td>
+                    <td class="text-start"><%= category.name %></td>
+                    <td class="text-start"><%= category.description %></td>
                     <td>
                     </td>
                     <td class="text-start">
@@ -150,6 +85,7 @@
                       <a href="" class="btn btn-info text-white">Edit</a>
                     </td>
                   </tr>
+                  <% }) %>
                 </tbody>
               </table>
             </div>
@@ -158,13 +94,83 @@
       </div>
     </div>
     <div class="pagination-container">
-      <a href="#">&laquo; Previous</a>
-      <span class="current-page"></span>
-      <a href="#"></a>
-      <a href="#">Next &raquo;</a>
+      <% if (currentPage > 1) { %>
+      <a href="?page=<%= currentPage - 1 %>">&laquo; Previous</a>
+      <% } %> <% for (let i = 1; i <= totalPages; i++) { %> <% if (i ===
+      currentPage) { %>
+      <span class="current-page"><%= i %></span>
+      <% } else { %>
+      <a href="?page=<%= i %>"><%= i %></a>
+      <% } %> <% } %> <% if (currentPage < totalPages) { %>
+      <a href="?page=<%= currentPage + 1 %>">Next &raquo;</a>
+      <% } %>
     </div>
+
   </section>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<%- include("../partials/admin/footer.ejs") %>
+  <script>
+    // Frontend Form Submission
+    document.getElementById("category-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
 
+      const name = document.getElementById("product_name").value.trim();
+      const description = document.getElementById("descriptionId").value.trim();
+
+      if (!name || !description) {
+        Swal.fire({
+          icon: "error",
+          title: "Validation Error",
+          text: "All fields are required!",
+        });
+        return;
+      }
+      if (name == name) {
+        Swal.fire({
+          icon: "error",
+          title: "Validation Error",
+          text: "Name already exist",
+        });
+        return;
+      }
+
+
+      try {
+        const response = await fetch("/admin/addCategory", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, description }),
+        });
+
+        const result = await response.json();
+
+        if (response.status === 400) {
+          Swal.fire({
+            icon: "error",
+            title: "oops",
+            text: result.error,
+          });
+        } else if (response.status === 201) {
+          Swal.fire({
+            icon: "success",
+            title: "Category Added",
+            text: result.success,
+          }).then(() => {
+            document.getElementById("category-form").reset();
+          });
+        } else {
+          throw new Error("Unexpected error");
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Something went wrong. Please try again later.",
+        });
+        console.error("Error:", error);
+      }
+    });
+  </script>
+<%- include("../partials/admin/footer.ejs") %>
