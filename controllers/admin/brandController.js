@@ -25,7 +25,7 @@ try {
         totalPages,})
     
     } catch (error) {
-        res.redirect('/pageError')
+        res.redirect('/admin/pageError')
     }
     
 }
