@@ -97,7 +97,7 @@
                       <% } %>
                     </td>
                     <td class="text-start">
-                      <a href="" class="btn btn-info text-white">Edit</a>
+                      <a href="/admin/editCategory?id=<%= category._id %>" class="btn btn-info text-white">Edit</a>
                     </td>
                   </tr>
                   <% }) %>
@@ -162,7 +162,8 @@
         if (response.status === 400) {
           document.getElementById("name-error").textContent = result.error;
        
-        } else if (response.status === 201) {
+        }
+         else if (response.status === 201) {
           Swal.fire({
             icon: "success",
             title: "Category Added",

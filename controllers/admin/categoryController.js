@@ -24,7 +24,7 @@ const categoryInfo = async (req,res)=>{
 
    } catch (error) {
     console.error(error);
-    res.redirect("/pageError")
+    res.redirect("/admin/pageError")
     
    }
 }
@@ -44,7 +44,7 @@ const addCategory = async(req,res)=>{
     res.status(201).json({ success: "Category Added Successfully" });
     } catch (error) {
     console.error("Error adding category:", error);
-    res.redirect("/pageError");
+    res.redirect("/admin/pageError");
     }
 }
 
@@ -85,12 +85,11 @@ const removeCategoryOffer = async (req, res) => {
     try {
         const { categoryId } = req.body;
 
-        // Validate categoryId
         if (!mongoose.Types.ObjectId.isValid(categoryId)) {
             return res.status(400).json({ status: false, message: "Invalid categoryId format" });
         }
 
-        // Find category by ID
+       
         const category = await Category.findById(categoryId);
 
         if (!category) {
@@ -99,23 +98,23 @@ const removeCategoryOffer = async (req, res) => {
 
         const percentage = category.categoryOffer;
 
-        // Find products under this category
+       
         const products = await Product.find({ category: category._id });
 
         if (products.length > 0) {
             for (const product of products) {
-                // Update product salePrice and productOffer
+        
                 product.salePrice += Math.floor(product.regularPrice * (percentage / 100));
                 product.productOffer = 0;
                 await product.save();
             }
         }
 
-        // Reset category offer
+       
         category.categoryOffer = 0;
         await category.save();
 
-        // Respond with success
+       
         res.json({ status: true, message: "Category offer removed successfully" });
     } catch (error) {
         console.error(error);
@@ -125,12 +124,12 @@ const removeCategoryOffer = async (req, res) => {
 
 const getListCategory= async (req,res) => {
     try {
-       let id = req.query.id;
+       const {id} = req.query;
         await Category.updateOne({_id:id},{$set:{isListed:false}});
         res.redirect('/admin/category')
         
     } catch (error) {
-        res.redirect('/pageError')
+        res.redirect('/admin/pageError')
         
     }
     
@@ -138,11 +137,53 @@ const getListCategory= async (req,res) => {
 
 const getUnListCategory = async (req,res) => {
     try {
-        let id = req.query.id;
+        const {id} = req.query;
         await Category.updateOne({_id:id},{$set:{isListed:true}});
         res.redirect('/admin/category')
     } catch (error) {
-        res.redirect('/pageError')
+        res.redirect('/admin/pageError')
+    }
+    
+}
+const getEditCategory =async (req,res) => {
+    try {
+        const {id} = req.query;
+        const category = await Category.findById(id)
+      res.render('edit-category',{category:category})
+        
+    } catch (error) {
+        res.redirect('/admin/pageError') 
+    }
+    
+}
+
+const editCategory = async (req,res) => {
+    try {
+        const id = req.params.id;
+    
+        
+        const {name,description} = req.body;
+        
+      const name1 = name.trim().toLowerCase();
+
+        const existingCategory = await Category.findOne({name:name1});
+        if(existingCategory){
+        return res.status(400).json({ error: "Category Name already exists" });
+        }
+  
+      const updateCategory = await Category.findByIdAndUpdate(id,{
+        name:name1,
+        description
+      },{new:true});
+
+      if(updateCategory){
+        res.redirect('/admin/category')
+      }else{
+        res.status(404).json({error:"Internal server error"})
+      }
+
+} catch (error) {
+        res.redirect('/admin/pageError') 
     }
     
 }
@@ -152,5 +193,7 @@ module.exports=({
     addCategoryOffer,
     removeCategoryOffer,
     getListCategory,
-    getUnListCategory
+    getUnListCategory,
+    getEditCategory,
+    editCategory
 })
